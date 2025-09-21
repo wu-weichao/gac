@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(go mod:*)",
+      "Bash(go build:*)",
+      "Bash(./gac-core version)",
+      "Bash(./gac-core install)",
+      "Bash(where:*)",
+      "Bash(./gac-core.exe version)",
+      "Bash(cat:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": []
+  }
+}

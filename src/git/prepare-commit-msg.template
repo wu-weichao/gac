@@ -1,0 +1,60 @@
+#!/bin/sh
+#
+# GAC (Git AI Commit) Hook
+# Called by "git commit" with the name of the file that has the
+# commit message, followed by the description of the commit
+# message's source. The hook's purpose is to edit the commit
+# message file. If the hook fails with a non-zero status,
+# the commit is aborted.
+#
+
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+SHA1=$3
+
+# 只在特定情况下运行 GAC
+# - 没有提交消息来源 (正常的 git commit)
+# - 或者消息来源是 "message" (git commit -m)
+if [ -z "$COMMIT_SOURCE" ] || [ "$COMMIT_SOURCE" = "message" ]; then
+    # Windows 环境下的路径查找
+    GAC_FOUND=0
+
+    # 尝试在 PATH 中查找
+    if command -v gac-core.exe >/dev/null 2>&1; then
+        gac-core.exe "$COMMIT_MSG_FILE" 2>/dev/null
+        GAC_FOUND=1
+    elif command -v gac-core >/dev/null 2>&1; then
+        gac-core "$COMMIT_MSG_FILE" 2>/dev/null
+        GAC_FOUND=1
+    # 尝试用户目录
+    elif [ -x "$HOME/.gac/bin/gac-core.exe" ]; then
+        "$HOME/.gac/bin/gac-core.exe" "$COMMIT_MSG_FILE" 2>/dev/null
+        GAC_FOUND=1
+    elif [ -x "$HOME/.local/bin/gac-core.exe" ]; then
+        "$HOME/.local/bin/gac-core.exe" "$COMMIT_MSG_FILE" 2>/dev/null
+        GAC_FOUND=1
+    elif [ -x "$HOME/.local/bin/gac-core" ]; then
+        "$HOME/.local/bin/gac-core" "$COMMIT_MSG_FILE" 2>/dev/null
+        GAC_FOUND=1
+    # 开发环境：尝试当前项目目录
+    elif [ -x "./gac-core.exe" ]; then
+        "./gac-core.exe" "$COMMIT_MSG_FILE" 2>/dev/null
+        GAC_FOUND=1
+    elif [ -x "./src/gac-core.exe" ]; then
+        "./src/gac-core.exe" "$COMMIT_MSG_FILE" 2>/dev/null
+        GAC_FOUND=1
+    elif [ -x "./src/gac-core" ]; then
+        "./src/gac-core" "$COMMIT_MSG_FILE" 2>/dev/null
+        GAC_FOUND=1
+    fi
+
+    # 如果没有找到 GAC，静默退出（不阻塞提交）
+    if [ $GAC_FOUND -eq 0 ]; then
+        # 不输出错误信息，避免干扰用户
+        exit 0
+    fi
+fi
+
+# 如果运行到这里，说明 GAC 已经处理完毕或者有其他提交来源
+# 正常退出，让 git commit 继续
+exit 0
