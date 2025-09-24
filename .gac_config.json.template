@@ -1,7 +1,7 @@
 {
   "llm": {
     "provider": "openai",
-    "api_key": "sk-8nSNUXWbTCg5LjwmiENXOjCQ6dxMQHlxV8zb0XurG2lsIcK5",
+    "api_key": "you api key",
     "endpoint": "https://api.moonshot.cn/v1/chat/completions",
     "model": "moonshot-v1-8k"
   }
